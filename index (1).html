@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Focus — Tâches, Mails & Projets</title>
+<meta name="description" content="Reste organisé, atteins tes objectifs.">
+<meta name="theme-color" content="#6C5FF5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Focus">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%236C5FF5'/%3E%3Cpath d='M30 52l14 14 26-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%236C5FF5'/%3E%3Cpath d='M30 52l14 14 26-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#EDEFF9; --card:#FFFFFF; --ink:#1B1C31; --muted:#8A8FA8; --line:#ECEDF5;
+  --violet:#6C5FF5; --violet-2:#8B7DF8; --violet-soft:#EEEBFE;
+  --green:#2EBD7E; --green-soft:#E3F7EE;
+  --orange:#F59E42; --orange-soft:#FEF3E6;
+  --blue:#4D9DF6; --blue-soft:#E8F2FE;
+  --red:#F0506E; --red-soft:#FDEAEE;
+  --r:18px; --shadow:0 6px 24px rgba(50,50,93,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:#DFE2F2; color:var(--ink); font-size:15px; line-height:1.45;
+}
+#app{
+  max-width:440px; min-height:100dvh; margin:0 auto; background:var(--bg);
+  position:relative; display:flex; flex-direction:column;
+  box-shadow:0 0 60px rgba(40,40,80,.12);
+}
+button{font:inherit;border:0;background:none;cursor:pointer;color:inherit}
+input,textarea,select{font:inherit;color:inherit;width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:13px 15px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--violet)}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:17px;font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.screen{display:none;flex:1;flex-direction:column;padding:22px 18px 110px;animation:fade .22s ease}
+.screen.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+.row{display:flex;align-items:center;gap:12px}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* ---------- Auth ---------- */
+#auth{display:flex;min-height:100dvh;flex-direction:column;justify-content:center;padding:34px 26px;gap:8px;
+  background:linear-gradient(180deg,#F2F3FB 0%,#E6E4FB 55%,#C9C2F4 100%)}
+.logo-tile{width:74px;height:74px;border-radius:22px;background:linear-gradient(135deg,var(--violet),var(--violet-2));
+  display:grid;place-items:center;margin:0 auto 18px;box-shadow:0 12px 28px rgba(108,95,245,.35)}
+#auth h1{text-align:center}
+#auth .tagline{text-align:center;color:#5A5C7A;margin:6px 0 26px}
+.field label{display:block;font-size:13px;font-weight:600;margin:0 0 6px 4px;color:#4A4C68}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:15px;
+  font-weight:700;font-size:15.5px;transition:transform .08s ease}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,var(--violet),var(--violet-2));color:#fff;box-shadow:0 8px 20px rgba(108,95,245,.32)}
+.btn-ghost{color:var(--violet);font-weight:600}
+.auth-error{background:var(--red-soft);color:var(--red);border-radius:12px;padding:10px 14px;font-size:13.5px;display:none}
+
+/* ---------- Header ---------- */
+.greet .hello{font-size:15px;color:#56587a}
+.avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#A99CFA,#6C5FF5);
+  color:#fff;font-weight:800;font-size:20px;display:grid;place-items:center;position:relative;border:0;
+  background-size:cover;background-position:center;overflow:visible}
+.avatar::after{content:"";position:absolute;right:1px;bottom:1px;width:12px;height:12px;border-radius:50%;
+  background:var(--green);border:2.5px solid var(--bg)}
+.icon-btn{width:40px;height:40px;min-width:40px;border-radius:13px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;color:#3c3e5c}
+.screen-title{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.screen-title h1{font-size:22px}
+.searchbar{display:none;margin-top:12px}
+.searchbar.open{display:block}
+
+/* ---------- Vue d'ensemble ---------- */
+.overview{background:linear-gradient(135deg,#8B7DF8 0%,#6C5FF5 60%,#5B4DE0 100%);color:#fff;
+  border-radius:22px;padding:18px;box-shadow:0 14px 30px rgba(108,95,245,.35)}
+.overview .title{font-size:13px;font-weight:600;opacity:.9;margin-bottom:12px}
+.ov-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.ov-cell{background:rgba(255,255,255,.16);border-radius:16px;padding:12px 10px;backdrop-filter:blur(4px)}
+.ov-cell .lab{font-size:12px;opacity:.85}
+.ov-cell .val{font-size:21px;font-weight:800;margin:2px 0 6px}
+.ov-cell .sub{font-size:10.5px;opacity:.75}
+.bar{height:5px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden;margin-top:7px}
+.bar > i{display:block;height:100%;border-radius:99px;background:#fff;transition:width .4s ease}
+
+/* ---------- Sections ---------- */
+.section-head{display:flex;justify-content:space-between;align-items:baseline;margin:22px 2px 10px}
+.link{color:var(--violet);font-weight:600;font-size:13px}
+
+/* ---------- Items tâches ---------- */
+.task{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;
+  box-shadow:var(--shadow);padding:14px 15px;width:100%;text-align:left}
+.check{width:24px;height:24px;min-width:24px;border-radius:50%;border:2px solid #C9CBE0;display:grid;place-items:center;
+  background:#fff;transition:all .15s ease}
+.check svg{opacity:0;transform:scale(.5);transition:all .15s ease}
+.task.done .check{background:var(--violet);border-color:var(--violet)}
+.task.done .check svg{opacity:1;transform:scale(1)}
+.task.done .t-title{text-decoration:line-through;color:var(--muted)}
+.t-body{flex:1;min-width:0}
+.t-title{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.chip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.chip.haute{background:var(--red-soft);color:var(--red)}
+.chip.moyenne{background:var(--orange-soft);color:var(--orange)}
+.chip.basse{background:var(--blue-soft);color:var(--blue)}
+.chip.ok{background:var(--green-soft);color:var(--green)}
+.chip.encours{background:var(--green-soft);color:var(--green)}
+.chip.viol{background:var(--violet-soft);color:var(--violet)}
+.chev{color:#C2C5DA}
+
+/* ---------- Événements ---------- */
+.event{display:flex;gap:14px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:13px 15px;align-items:center}
+.event .time{font-weight:700;font-size:13.5px;min-width:46px}
+.event .pipe{width:3.5px;border-radius:99px;align-self:stretch}
+.event .what{font-weight:600;font-size:14px}
+
+/* ---------- Filtres / segments ---------- */
+.segs{display:flex;gap:8px;margin:14px 0 6px;overflow-x:auto;scrollbar-width:none}
+.segs::-webkit-scrollbar{display:none}
+.seg{padding:8px 15px;border-radius:99px;background:#fff;color:#62648a;font-weight:600;font-size:13px;
+  box-shadow:var(--shadow);white-space:nowrap}
+.seg .n{opacity:.6;margin-left:4px}
+.seg.active{background:var(--violet);color:#fff}
+.group-label{font-size:13px;font-weight:700;color:#54567a;margin:18px 2px 8px}
+
+/* ---------- Mails ---------- */
+.mail{display:flex;gap:12px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+  padding:14px 15px;width:100%;text-align:left;align-items:flex-start}
+.m-avatar{width:42px;height:42px;min-width:42px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;font-weight:700;font-size:15px}
+.m-body{flex:1;min-width:0}
+.m-top{display:flex;justify-content:space-between;gap:8px}
+.m-from{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-date{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.m-subj{font-size:13.5px;font-weight:600;color:#3c3e5c;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-prev{font-size:12.5px;color:var(--muted);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--violet);margin-top:6px}
+.mail.read .m-from{font-weight:600;color:#54567a}
+.mail.read .dot{visibility:hidden}
+
+/* ---------- Projets ---------- */
+.proj{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px;width:100%;text-align:left}
+.p-icon{width:44px;height:44px;min-width:44px;border-radius:13px;display:grid;place-items:center;color:#fff}
+.p-bar{height:6px;border-radius:99px;background:#EEEFF7;overflow:hidden;margin-top:12px}
+.p-bar > i{display:block;height:100%;border-radius:99px;transition:width .4s ease}
+.p-meta{font-size:12px;color:var(--muted);margin-top:9px}
+.pct{font-weight:800;font-size:14px}
+
+/* ---------- Détail ---------- */
+.meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px}
+.meta-cell{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:11px;text-align:center}
+.meta-cell .k{font-size:11px;color:var(--muted)}
+.meta-cell .v{font-size:12.5px;font-weight:700;margin-top:3px}
+.subtask{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.subtask:last-child{border-bottom:0}
+.subtask.done span.lbl{text-decoration:line-through;color:var(--muted)}
+
+/* ---------- Calendrier ---------- */
+.cal-card{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-top:14px}
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-nav b{text-transform:capitalize;font-size:15.5px}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;
+  font-size:13.5px;font-weight:600;color:#3c3e5c;position:relative;width:38px;margin:0 auto}
+.cal-cell.out{color:#C6C8DC}
+.cal-cell.today{color:var(--violet);font-weight:800}
+.cal-cell.sel{background:var(--violet);color:#fff}
+.cal-cell .evdot{width:4.5px;height:4.5px;border-radius:50%;background:var(--violet);position:absolute;bottom:4px}
+.cal-cell.sel .evdot{background:#fff}
+
+/* ---------- Statistiques ---------- */
+.big-stat{font-size:32px;font-weight:800}
+.trend{font-size:12.5px;font-weight:700}
+.trend.up{color:var(--green)} .trend.down{color:var(--red)}
+.stat-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.stat-cell{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:13px 10px;text-align:center}
+.stat-cell .v{font-size:22px;font-weight:800}
+.stat-cell .k{font-size:11px;color:var(--muted);margin-top:2px}
+.donut-wrap{display:flex;gap:18px;align-items:center}
+.donut{width:120px;height:120px;min-width:120px;border-radius:50%;position:relative}
+.donut::after{content:"";position:absolute;inset:26px;background:#fff;border-radius:50%}
+.legend{flex:1;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.legend .row{justify-content:space-between}
+.lg-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px}
+
+/* ---------- Nav ---------- */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;align-items:center;padding:10px 6px calc(10px + env(safe-area-inset-bottom));z-index:40}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:#9A9DB8;width:62px}
+.nav-btn.active{color:var(--violet)}
+#fab{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet-2));
+  color:#fff;display:grid;place-items:center;box-shadow:0 10px 22px rgba(108,95,245,.45);margin-top:-26px;transition:transform .1s}
+#fab:active{transform:scale(.93)}
+
+/* ---------- Modales / divers ---------- */
+.veil{position:fixed;inset:0;background:rgba(20,20,45,.45);z-index:60;display:none;align-items:flex-end;justify-content:center}
+.veil.open{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:440px;border-radius:24px 24px 0 0;padding:20px 18px calc(26px + env(safe-area-inset-bottom));
+  max-height:88dvh;overflow-y:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.grab{width:42px;height:4.5px;border-radius:99px;background:#D4D6E6;margin:0 auto 16px}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:104px;background:#23243d;color:#fff;
+  padding:11px 18px;border-radius:13px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:90;
+  box-shadow:0 10px 26px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:13.5px}
+.danger{color:var(--red);font-weight:700}
+.settings-row{display:flex;align-items:center;gap:13px;background:#fff;border-radius:15px;box-shadow:var(--shadow);
+  padding:14px 15px;width:100%;text-align:left;font-weight:600;font-size:14.5px}
+.s-ic{width:36px;height:36px;min-width:36px;border-radius:11px;display:grid;place-items:center}
+.photo-pick{width:84px;height:84px;border-radius:50%;margin:0 auto;display:grid;place-items:center;
+  background:linear-gradient(135deg,#A99CFA,#6C5FF5);color:#fff;font-size:28px;font-weight:800;
+  background-size:cover;background-position:center;border:3px solid #fff;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ÉCRAN AUTH -->
+  <section id="auth">
+    <div class="logo-tile">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg>
+    </div>
+    <h1 id="auth-title">Crée ton compte</h1>
+    <p class="tagline">Reste organisé, atteins tes objectifs.</p>
+    <div class="stack">
+      <div class="auth-error" id="auth-error"></div>
+      <div class="field" id="f-name">
+        <label for="in-name">Prénom</label>
+        <input id="in-name" placeholder="Ex. William" autocomplete="given-name">
+      </div>
+      <div class="field">
+        <label for="in-user">Identifiant</label>
+        <input id="in-user" placeholder="Ton identifiant" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="in-pass">Mot de passe</label>
+        <input id="in-pass" type="password" placeholder="6 caractères minimum" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" id="auth-go" style="margin-top:6px">Commencer</button>
+      <button class="btn btn-ghost" id="auth-switch">J'ai déjà un compte — Se connecter</button>
+    </div>
+  </section>
+
+  <!-- ACCUEIL -->
+  <section class="screen" id="screen-home">
+    <div class="spread">
+      <div class="greet">
+        <div class="hello">Bonjour</div>
+        <h1><span id="g-name">…</span> 👋</h1>
+        <div class="small muted" style="margin-top:3px">Concentre-toi sur l'essentiel aujourd'hui.</div>
+      </div>
+      <div class="row" style="gap:9px">
+        <button class="icon-btn" data-nav="stats" aria-label="Statistiques"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg></button>
+        <button class="icon-btn" data-nav="calendar" aria-label="Calendrier"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button>
+        <button class="avatar" id="open-settings" aria-label="Paramètres">·</button>
+      </div>
+    </div>
+
+    <div class="overview" style="margin-top:18px">
+      <div class="title">Vue d'ensemble</div>
+      <div class="ov-grid">
+        <div class="ov-cell"><div class="lab">Travail</div><div class="val" id="ov-work">0%</div><div class="sub" id="ov-work-sub">0 / 0 tâches</div><div class="bar"><i id="ov-work-bar" style="width:0%"></i></div></div>
+        <div class="ov-cell"><div class="lab">Mails</div><div class="val" id="ov-mail">0</div><div class="sub">non lus</div><div class="bar"><i id="ov-mail-bar" style="width:0%"></i></div></div>
+        <div class="ov-cell"><div class="lab">Projets</div><div class="val" id="ov-proj">0%</div><div class="sub" id="ov-proj-sub">0 projet</div><div class="bar"><i id="ov-proj-bar" style="width:0%"></i></div></div>
+      </div>
+    </div>
+
+    <div class="section-head"><h2>Tâches du jour</h2><button class="link" data-nav="work">Voir tout</button></div>
+    <div class="stack" id="home-tasks"></div>
+
+    <div class="section-head"><h2>Prochains événements</h2><button class="link" data-nav="calendar">Voir tout</button></div>
+    <div class="stack" id="home-events"></div>
+  </section>
+
+  <!-- TRAVAIL -->
+  <section class="screen" id="screen-work">
+    <div class="spread"><h1>Travail</h1>
+      <button class="icon-btn" data-search="work" aria-label="Rechercher"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button></div>
+    <div class="searchbar" id="sb-work"><input id="q-work" placeholder="Rechercher une tâche…"></div>
+    <div class="segs" id="work-filters">
+      <button class="seg active" data-f="all">Toutes <span class="n"></span></button>
+      <button class="seg" data-f="todo">À faire <span class="n"></span></button>
+      <button class="seg" data-f="done">Terminées <span class="n"></span></button>
+    </div>
+    <div id="work-list"></div>
+  </section>
+
+  <!-- MAILS -->
+  <section class="screen" id="screen-mails">
+    <div class="spread"><h1>Mails</h1>
+      <button class="icon-btn" data-search="mails" aria-label="Rechercher"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button></div>
+    <div class="searchbar" id="sb-mails"><input id="q-mails" placeholder="Rechercher un mail…"></div>
+    <div class="segs" id="mail-filters">
+      <button class="seg active" data-f="in">Boîte de réception <span class="n"></span></button>
+      <button class="seg" data-f="sent">Envoyés <span class="n"></span></button>
+    </div>
+    <div class="stack" id="mail-list" style="margin-top:8px"></div>
+  </section>
+
+  <!-- PROJETS -->
+  <section class="screen" id="screen-projects">
+    <div class="spread"><h1>Projets</h1>
+      <button class="icon-btn" data-search="projects" aria-label="Rechercher"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button></div>
+    <div class="searchbar" id="sb-projects"><input id="q-projects" placeholder="Rechercher un projet…"></div>
+    <div class="segs" id="proj-filters">
+      <button class="seg active" data-f="all">Tous</button>
+      <button class="seg" data-f="run">En cours</button>
+      <button class="seg" data-f="done">Terminés</button>
+    </div>
+    <div class="stack" id="proj-list" style="margin-top:8px"></div>
+  </section>
+
+  <!-- CALENDRIER -->
+  <section class="screen" id="screen-calendar">
+    <div class="screen-title">
+      <button class="icon-btn" data-nav="home" aria-label="Retour"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h1>Calendrier</h1>
+    </div>
+    <div class="cal-card">
+      <div class="cal-nav">
+        <button class="icon-btn" id="cal-prev" style="box-shadow:none;background:var(--bg)">‹</button>
+        <b id="cal-label"></b>
+        <button class="icon-btn" id="cal-next" style="box-shadow:none;background:var(--bg)">›</button>
+      </div>
+      <div class="cal-week"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="section-head"><h2 id="cal-day-label">Événements</h2><button class="link" id="cal-add">Ajouter</button></div>
+    <div class="stack" id="cal-events"></div>
+  </section>
+
+  <!-- STATISTIQUES -->
+  <section class="screen" id="screen-stats">
+    <div class="screen-title">
+      <button class="icon-btn" data-nav="home" aria-label="Retour"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h1>Statistiques</h1>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="small muted" style="font-weight:700">Productivité</div>
+      <div class="spread">
+        <div><span class="big-stat" id="st-prod">0%</span><div class="trend" id="st-trend"></div></div>
+        <svg id="st-spark" width="140" height="46" viewBox="0 0 140 46"></svg>
+      </div>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-cell"><div class="v" id="st-tasks">0</div><div class="k">Tâches terminées</div></div>
+      <div class="stat-cell"><div class="v" id="st-mails">0</div><div class="k">Mails traités</div></div>
+      <div class="stat-cell"><div class="v" id="st-projs">0</div><div class="k">Projets en cours</div></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="small muted" style="font-weight:700;margin-bottom:14px">Répartition des tâches</div>
+      <div class="donut-wrap">
+        <div class="donut" id="st-donut"></div>
+        <div class="legend" id="st-legend"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAVIGATION -->
+  <nav id="nav" style="display:none">
+    <button class="nav-btn active" data-nav="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</button>
+    <button class="nav-btn" data-nav="work"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7"/></svg>Travail</button>
+    <button id="fab" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="nav-btn" data-nav="mails"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>Mails</button>
+    <button class="nav-btn" data-nav="projects"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Projets</button>
+  </nav>
+
+  <div class="veil" id="veil"><div class="sheet" id="sheet"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ================= Stockage (localStorage + repli mémoire) ================= */
+const mem = {};
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){ mem[k]=v; } },
+  del(k){ try { localStorage.removeItem(k); } catch(e){ delete mem[k]; } }
+};
+
+/* ================= PWA : manifest dynamique ================= */
+(function(){
+  const manifest = {
+    name:"Focus — Tâches, Mails & Projets", short_name:"Focus", start_url:".", scope:".",
+    display:"standalone", background_color:"#EDEFF9", theme_color:"#6C5FF5",
+    icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%236C5FF5'/%3E%3Cpath d='M30 52l14 14 26-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+      sizes:"512x512", type:"image/svg+xml", purpose:"any"}]
+  };
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+  document.head.appendChild(link);
+})();
+
+/* ================= Utilitaires ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const isoOf = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const isoToday = () => isoOf(new Date());
+function isoShift(days){ const d=new Date(); d.setDate(d.getDate()+days); return isoOf(d); }
+function dateLabel(iso){
+  if(iso===isoToday()) return "Aujourd'hui";
+  if(iso===isoShift(1)) return 'Demain';
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+}
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+async function hash(str){
+  try{
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('focus·'+str));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }catch(e){
+    let h=0; for(const c of 'focus·'+str){ h=(h*31 + c.charCodeAt(0))|0; } return 'f'+(h>>>0).toString(16);
+  }
+}
+const AV_COLORS = ['#6C5FF5','#F59E42','#2EBD7E','#4D9DF6','#F0506E','#9B59B6'];
+const avColor = name => AV_COLORS[[...name].reduce((a,c)=>a+c.charCodeAt(0),0)%AV_COLORS.length];
+const initials = name => name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+/* ================= Données ================= */
+let session = null;
+let D = null;
+const dataKey = u => 'focus_data_'+u;
+const save = () => store.set(dataKey(session.user), JSON.stringify(D));
+
+function seedData(){
+  return {
+    tasks:[
+      {id:uid(), title:'Préparer présentation Q2', done:false, when:'today', priority:'Haute', project:'Application mobile', desc:'Préparer les slides et les chiffres clés pour la revue trimestrielle.', subtasks:[{t:'Rassembler les chiffres',done:false},{t:'Construire les slides',done:false}]},
+      {id:uid(), title:'Analyse des données', done:true, when:'today', priority:'Moyenne', project:'Application mobile', desc:"Analyser les données utilisateurs du 1er trimestre et en extraire les insights clés pour orienter la roadmap.", subtasks:[{t:'Collecte des données',done:true},{t:'Nettoyage des données',done:true},{t:'Analyse exploratoire',done:true},{t:'Rédaction des conclusions',done:false}]},
+      {id:uid(), title:"Appel avec l'équipe produit", done:false, when:'today', priority:'Basse', project:'CRM interne', desc:'Point hebdomadaire avec le produit.', subtasks:[]},
+      {id:uid(), title:'Revoir budget marketing', done:false, when:'tomorrow', priority:'Moyenne', project:'Campagne marketing', desc:'', subtasks:[]},
+      {id:uid(), title:'Rédiger compte rendu', done:false, when:'tomorrow', priority:'Basse', project:'', desc:'', subtasks:[]},
+      {id:uid(), title:'Formation design system', done:false, when:'later', priority:'Basse', project:'Refonte site web', desc:'', subtasks:[]},
+      {id:uid(), title:'Recherche utilisateur', done:true, when:'later', priority:'Moyenne', project:'Application mobile', desc:'', subtasks:[]},
+      {id:uid(), title:'Wireframes', done:true, when:'later', priority:'Moyenne', project:'Application mobile', desc:'', subtasks:[]},
+      {id:uid(), title:'Développement', done:false, when:'later', priority:'Haute', project:'Application mobile', desc:'', subtasks:[]},
+      {id:uid(), title:'Tests & QA', done:false, when:'later', priority:'Moyenne', project:'Application mobile', desc:'', subtasks:[]},
+      {id:uid(), title:'Maquettes', done:true, when:'later', priority:'Moyenne', project:'Refonte site web', desc:'', subtasks:[]},
+      {id:uid(), title:'Intégration', done:true, when:'later', priority:'Moyenne', project:'Refonte site web', desc:'', subtasks:[]},
+      {id:uid(), title:'Recette', done:false, when:'later', priority:'Moyenne', project:'Refonte site web', desc:'', subtasks:[]},
+      {id:uid(), title:'Brief créatif', done:true, when:'later', priority:'Moyenne', project:'Campagne marketing', desc:'', subtasks:[]},
+      {id:uid(), title:'Plan média', done:false, when:'later', priority:'Moyenne', project:'Campagne marketing', desc:'', subtasks:[]},
+      {id:uid(), title:'Cahier des charges', done:true, when:'later', priority:'Moyenne', project:'CRM interne', desc:'', subtasks:[]},
+      {id:uid(), title:'Déploiement', done:false, when:'later', priority:'Moyenne', project:'CRM interne', desc:'', subtasks:[]}
+    ],
+    mails:[
+      {id:uid(), from:'Marie Dubois', subject:'Re: Proposition partenariat', body:"Bonjour,\n\nMerci pour ta proposition, cela me semble pertinent. Voyons ensemble les prochaines étapes lors d'un appel cette semaine.\n\nBonne journée,\nMarie", read:false, date:'09:30', folder:'in'},
+      {id:uid(), from:'Lucas Martin', subject:'Présentation projet', body:'Bonjour,\n\nVoici la présentation du projet comme convenu. Dis-moi si tu as des questions.\n\nLucas', read:false, date:'Hier', folder:'in'},
+      {id:uid(), from:'Équipe Produit', subject:'Mise à jour sprint', body:'Voici le récapitulatif des avancées du sprint en cours.', read:true, date:'Hier', folder:'in'},
+      {id:uid(), from:'Sophie Leroy', subject:'Point hebdo', body:'Peux-tu me confirmer ta disponibilité pour notre point de demain ?', read:true, date:'Il y a 3 j', folder:'in'},
+      {id:uid(), from:'Newsletter UX', subject:'Les tendances UX 2026', body:'Découvrez les principales tendances à suivre cette année.', read:true, date:'Il y a 4 j', folder:'in'}
+    ],
+    projects:[
+      {id:uid(), name:'Refonte site web', color:'#6C5FF5', deadline:'30 juin 2026', team:4, desc:'Moderniser le site vitrine et améliorer la conversion.'},
+      {id:uid(), name:'Application mobile', color:'#2EBD7E', deadline:'15 août 2026', team:5, desc:"Développer la nouvelle application mobile pour améliorer l'expérience utilisateur et augmenter l'engagement."},
+      {id:uid(), name:'Campagne marketing', color:'#F59E42', deadline:'1 juil. 2026', team:3, desc:'Campagne de lancement multicanale.'},
+      {id:uid(), name:'CRM interne', color:'#4D9DF6', deadline:'20 sept. 2026', team:2, desc:'Outiller le suivi commercial.'}
+    ],
+    events:[
+      {id:uid(), date:isoToday(), time:'10:00', title:'Réunion équipe', place:'Salle A', color:'#6C5FF5'},
+      {id:uid(), date:isoToday(), time:'14:30', title:'Point projet mobile', place:'En visio', color:'#2EBD7E'},
+      {id:uid(), date:isoShift(1), time:'16:00', title:'Appel client', place:'Téléphone', color:'#F59E42'}
+    ],
+    stats:{log:{}}
+  };
+}
+
+/* Migration des données v1 → v2 */
+function migrate(d){
+  if(!d.stats) d.stats = {log:{}};
+  (d.events||[]).forEach(ev => { if(!ev.date) ev.date = isoToday(); });
+  (d.projects||[]).forEach(p => {
+    if(Array.isArray(p.items)){
+      p.items.forEach(it => d.tasks.push({id:uid(), title:it.t, done:!!it.done, when:'later', priority:'Moyenne', project:p.name, desc:'', subtasks:[]}));
+      delete p.items;
+    }
+  });
+  return d;
+}
+
+/* ================= Auth ================= */
+let authMode = 'signup';
+function usersDB(){ try{ return JSON.parse(store.get('focus_users')||'{}'); }catch(e){ return {}; } }
+function saveUsers(db){ store.set('focus_users', JSON.stringify(db)); }
+function me(){ return usersDB()[session.user] || {name:session.name}; }
+function authError(msg){ const e=$('#auth-error'); e.textContent=msg; e.style.display='block'; }
+
+$('#auth-switch').onclick = () => {
+  authMode = authMode==='signup' ? 'login' : 'signup';
+  $('#auth-title').textContent = authMode==='signup' ? 'Crée ton compte' : 'Content de te revoir';
+  $('#f-name').style.display = authMode==='signup' ? 'block' : 'none';
+  $('#auth-go').textContent = authMode==='signup' ? 'Commencer' : 'Se connecter';
+  $('#auth-switch').textContent = authMode==='signup' ? "J'ai déjà un compte — Se connecter" : 'Créer un nouveau compte';
+  $('#auth-error').style.display='none';
+};
+
+$('#auth-go').onclick = async () => {
+  const name = $('#in-name').value.trim();
+  const user = $('#in-user').value.trim().toLowerCase();
+  const pass = $('#in-pass').value;
+  if(!user) return authError('Indique ton identifiant.');
+  if(pass.length < 6) return authError('Le mot de passe doit faire au moins 6 caractères.');
+  const db = usersDB();
+  const h = await hash(pass);
+  if(authMode==='signup'){
+    if(!name) return authError('Indique ton prénom.');
+    if(db[user]) return authError('Cet identifiant existe déjà. Connecte-toi plutôt.');
+    db[user] = {name, hash:h, email:'', job:'', photo:''};
+    saveUsers(db);
+    store.set(dataKey(user), JSON.stringify(seedData()));
+  }else{
+    if(!db[user]) return authError('Identifiant inconnu. Crée d’abord un compte.');
+    if(db[user].hash !== h) return authError('Mot de passe incorrect.');
+  }
+  session = {user, name: db[user].name};
+  store.set('focus_session', JSON.stringify(session));
+  enterApp();
+};
+$('#in-pass').addEventListener('keydown', e => { if(e.key==='Enter') $('#auth-go').click(); });
+
+function setAvatar(){
+  const u = me(), av = $('#open-settings');
+  if(u.photo){ av.style.backgroundImage = `url(${u.photo})`; av.textContent=''; }
+  else { av.style.backgroundImage=''; av.textContent = initials(session.name); }
+}
+function enterApp(){
+  try{ D = migrate(JSON.parse(store.get(dataKey(session.user))) || seedData()); }catch(e){ D = seedData(); }
+  save();
+  $('#auth').style.display='none';
+  $('#nav').style.display='flex';
+  $('#g-name').textContent = session.name;
+  setAvatar();
+  go('home');
+}
+function logout(){
+  store.del('focus_session'); closeSheet();
+  $('#nav').style.display='none';
+  $$('.screen').forEach(s=>s.classList.remove('active'));
+  $('#auth').style.display='flex';
+  $('#in-pass').value='';
+}
+
+/* ================= Navigation ================= */
+let current = 'home';
+function go(name){
+  current = name;
+  $$('.screen').forEach(s=>s.classList.remove('active'));
+  $('#screen-'+name).classList.add('active');
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.nav===name));
+  render();
+  window.scrollTo({top:0});
+}
+
+/* ================= Recherche ================= */
+const Q = {work:'', mails:'', projects:''};
+['work','mails','projects'].forEach(k=>{
+  $('#q-'+k).addEventListener('input', e => { Q[k]=e.target.value.toLowerCase(); render(); });
+});
+
+/* ================= Rendus ================= */
+const checkSVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l5 5 9-11"/></svg>';
+let workFilter = 'all', mailFolder = 'in', projFilter = 'all';
+let calRef = new Date(), selDay = isoToday();
+
+function counts(){
+  const t = D.tasks, done = t.filter(x=>x.done).length;
+  const unread = D.mails.filter(m=>m.folder==='in' && !m.read).length;
+  const tasksOf = p => D.tasks.filter(x=>x.project===p.name);
+  const pct = p => { const ts=tasksOf(p); return ts.length? Math.round(ts.filter(x=>x.done).length/ts.length*100):0; };
+  const avg = D.projects.length ? Math.round(D.projects.reduce((a,p)=>a+pct(p),0)/D.projects.length) : 0;
+  return {done, total:t.length, unread, inbox:D.mails.filter(m=>m.folder==='in').length, projAvg:avg, pct, tasksOf};
+}
+
+function taskHTML(t, sub){
+  return `<button class="task ${t.done?'done':''}" data-task="${t.id}">
+    <span class="check" data-toggle="${t.id}">${checkSVG}</span>
+    <span class="t-body"><span class="t-title">${esc(t.title)}</span><span class="t-sub" style="display:block">${esc(sub)}</span></span>
+    ${t.priority==='Haute' && !t.done ? '<span class="chip haute">Haute</span>':''}
+    <span class="chev">›</span></button>`;
+}
+function eventHTML(ev, withDate){
+  return `<div class="event"><span class="time">${esc(ev.time)}</span><span class="pipe" style="background:${ev.color}"></span>
+    <span style="flex:1"><span class="what" style="display:block">${esc(ev.title)}</span>
+    <span class="small muted">${withDate? dateLabel(ev.date)+' · ':''}${esc(ev.place)}</span></span>
+    <button class="muted" data-del-event="${ev.id}" aria-label="Supprimer">✕</button></div>`;
+}
+
+function render(){
+  const c = counts();
+  /* Accueil */
+  $('#ov-work').textContent = (c.total? Math.round(c.done/c.total*100):0)+'%';
+  $('#ov-work-sub').textContent = `${c.done} / ${c.total} tâches`;
+  $('#ov-work-bar').style.width = (c.total? c.done/c.total*100:0)+'%';
+  $('#ov-mail').textContent = c.unread;
+  $('#ov-mail-bar').style.width = (c.inbox? (1-c.unread/c.inbox)*100:100)+'%';
+  $('#ov-proj').textContent = c.projAvg+'%';
+  $('#ov-proj-sub').textContent = D.projects.length+' projet'+(D.projects.length>1?'s':'');
+  $('#ov-proj-bar').style.width = c.projAvg+'%';
+
+  const todays = D.tasks.filter(t=>t.when==='today');
+  $('#home-tasks').innerHTML = todays.length
+    ? todays.map(t=>taskHTML(t, (t.done?'Terminée':'À faire') + (t.project?' · '+t.project:''))).join('')
+    : '<div class="card empty">Aucune tâche aujourd\'hui. Profite-en 🎉</div>';
+
+  const upcoming = D.events.filter(e=>e.date>=isoToday()).sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time)).slice(0,4);
+  $('#home-events').innerHTML = upcoming.length
+    ? upcoming.map(ev=>eventHTML(ev,true)).join('')
+    : '<div class="card empty">Aucun événement à venir.</div>';
+
+  /* Travail */
+  $$('#work-filters .seg').forEach(b=>{
+    b.classList.toggle('active', b.dataset.f===workFilter);
+    b.querySelector('.n').textContent = b.dataset.f==='all'? c.total : b.dataset.f==='todo'? c.total-c.done : c.done;
+  });
+  const groups = [['today','Aujourd\'hui'],['tomorrow','Demain'],['later','Plus tard']];
+  let wl = '';
+  for(const [k,label] of groups){
+    const items = D.tasks.filter(t=>t.when===k
+      && (workFilter==='all' || (workFilter==='done')===t.done)
+      && (!Q.work || (t.title+' '+(t.project||'')).toLowerCase().includes(Q.work)));
+    if(!items.length) continue;
+    wl += `<div class="group-label">${label}</div><div class="stack">` +
+      items.map(t=>taskHTML(t, (t.done?'Terminée':'À faire') + (t.project?' · '+t.project:''))).join('') + '</div>';
+  }
+  $('#work-list').innerHTML = wl || '<div class="card empty">Rien ici. Ajoute une tâche avec le bouton +.</div>';
+
+  /* Mails */
+  $$('#mail-filters .seg').forEach(b=>{
+    b.classList.toggle('active', b.dataset.f===mailFolder);
+    b.querySelector('.n').textContent = b.dataset.f==='in'? c.unread : D.mails.filter(m=>m.folder==='sent').length;
+  });
+  const mails = D.mails.filter(m=>m.folder===mailFolder
+    && (!Q.mails || (m.from+' '+m.subject+' '+m.body).toLowerCase().includes(Q.mails)));
+  $('#mail-list').innerHTML = mails.length
+    ? mails.map(m=>`<button class="mail ${m.read||m.folder==='sent'?'read':''}" data-mail="${m.id}">
+        <span class="m-avatar" style="background:${avColor(m.from)}">${initials(m.from)}</span>
+        <span class="m-body"><span class="m-top"><span class="m-from">${esc(m.from)}</span><span class="m-date">${esc(m.date)}</span></span>
+        <span class="m-subj">${esc(m.subject)}</span><span class="m-prev">${esc(m.body.split('\n')[0]||'')}</span></span>
+        <span class="dot"></span></button>`).join('')
+    : '<div class="card empty">Aucun mail dans ce dossier.</div>';
+
+  /* Projets */
+  $$('#proj-filters .seg').forEach(b=>b.classList.toggle('active', b.dataset.f===projFilter));
+  const projs = D.projects.filter(p=>{
+    const pc = c.pct(p);
+    return (projFilter==='all' || (projFilter==='done' ? pc===100 : pc<100))
+      && (!Q.projects || p.name.toLowerCase().includes(Q.projects));
+  });
+  $('#proj-list').innerHTML = projs.length
+    ? projs.map(p=>{
+        const pc = c.pct(p), n = c.tasksOf(p).length;
+        return `<button class="proj" data-proj="${p.id}">
+          <div class="spread"><div class="row"><span class="p-icon" style="background:${p.color}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></span>
+            <span><span style="font-weight:700;display:block">${esc(p.name)}</span>
+            <span class="chip ${pc===100?'ok':'encours'}" style="margin-top:3px;display:inline-block">${pc===100?'Terminé':'En cours'}</span></span></div>
+            <span class="pct">${pc}%</span></div>
+          <div class="p-bar"><i style="width:${pc}%;background:${p.color}"></i></div>
+          <div class="p-meta">Date limite : ${esc(p.deadline||'—')} · ${n} tâche${n>1?'s':''} · ${p.team||1} membre${(p.team||1)>1?'s':''}</div></button>`;
+      }).join('')
+    : '<div class="card empty">Aucun projet dans ce filtre.</div>';
+
+  renderCal();
+  renderStats();
+}
+
+/* ---------- Calendrier ---------- */
+function renderCal(){
+  const y = calRef.getFullYear(), m = calRef.getMonth();
+  $('#cal-label').textContent = calRef.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  const startIdx = (new Date(y,m,1).getDay()+6)%7;
+  const dim = new Date(y,m+1,0).getDate();
+  const dimPrev = new Date(y,m,0).getDate();
+  let cells = '';
+  for(let i=0;i<42;i++){
+    let day, iso, out=false;
+    if(i<startIdx){ day = dimPrev-startIdx+1+i; iso = isoOf(new Date(y,m-1,day)); out=true; }
+    else if(i<startIdx+dim){ day = i-startIdx+1; iso = isoOf(new Date(y,m,day)); }
+    else { day = i-startIdx-dim+1; iso = isoOf(new Date(y,m+1,day)); out=true; }
+    const hasEv = D.events.some(e=>e.date===iso);
+    cells += `<button class="cal-cell ${out?'out':''} ${iso===isoToday()?'today':''} ${iso===selDay?'sel':''}" data-day="${iso}">${day}${hasEv?'<span class="evdot"></span>':''}</button>`;
+    if(i===startIdx+dim-1 && i%7===6) break;
+  }
+  $('#cal-grid').innerHTML = cells;
+  $('#cal-day-label').textContent = dateLabel(selDay).replace(/^./,c=>c.toUpperCase());
+  const evs = D.events.filter(e=>e.date===selDay).sort((a,b)=>a.time.localeCompare(b.time));
+  $('#cal-events').innerHTML = evs.length ? evs.map(ev=>eventHTML(ev,false)).join('')
+    : '<div class="card empty">Aucun événement ce jour-là. Ajoute-en un avec le bouton +.</div>';
+}
+$('#cal-prev').onclick = () => { calRef = new Date(calRef.getFullYear(), calRef.getMonth()-1, 1); renderCal(); };
+$('#cal-next').onclick = () => { calRef = new Date(calRef.getFullYear(), calRef.getMonth()+1, 1); renderCal(); };
+$('#cal-grid').addEventListener('click', e => {
+  const b = e.target.closest('[data-day]'); if(!b) return;
+  selDay = b.dataset.day; renderCal();
+});
+$('#cal-add').onclick = () => newEventSheet(selDay);
+
+/* ---------- Statistiques ---------- */
+function renderStats(){
+  const c = counts();
+  const prod = c.total? Math.round(c.done/c.total*100):0;
+  $('#st-prod').textContent = prod+'%';
+  $('#st-tasks').textContent = c.done;
+  $('#st-mails').textContent = D.mails.filter(m=>m.folder==='in'&&m.read).length;
+  $('#st-projs').textContent = D.projects.filter(p=>c.pct(p)<100).length;
+
+  /* tendance + sparkline : tâches terminées par jour (journal d'activité) */
+  const log = D.stats.log, days=[];
+  for(let i=13;i>=0;i--) days.push(log[isoShift(-i)]||0);
+  const thisW = days.slice(7).reduce((a,b)=>a+b,0), lastW = days.slice(0,7).reduce((a,b)=>a+b,0);
+  const tr = $('#st-trend');
+  if(lastW>0){ const d=Math.round((thisW-lastW)/lastW*100); tr.textContent=(d>=0?'+':'')+d+'% vs semaine dernière'; tr.className='trend '+(d>=0?'up':'down'); }
+  else if(thisW>0){ tr.textContent='+'+thisW+' tâche'+(thisW>1?'s':'')+' cette semaine'; tr.className='trend up'; }
+  else { tr.textContent='Termine des tâches pour voir ta tendance'; tr.className='trend muted'; }
+  const wk = days.slice(7), max = Math.max(1,...wk);
+  const pts = wk.map((v,i)=> (10+i*20)+','+(40-(v/max)*32)).join(' ');
+  $('#st-spark').innerHTML = `<polyline points="${pts}" fill="none" stroke="#6C5FF5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`
+    + wk.map((v,i)=>`<circle cx="${10+i*20}" cy="${40-(v/max)*32}" r="2.6" fill="#6C5FF5"/>`).join('');
+
+  /* donut : répartition des tâches par projet */
+  const dist = [];
+  D.projects.forEach(p=>{ const n=c.tasksOf(p).length; if(n) dist.push({name:p.name, n, color:p.color}); });
+  const other = D.tasks.filter(t=>!t.project || !D.projects.some(p=>p.name===t.project)).length;
+  if(other) dist.push({name:'Autres', n:other, color:'#C9CBE0'});
+  dist.sort((a,b)=>b.n-a.n);
+  const tot = dist.reduce((a,d)=>a+d.n,0) || 1;
+  let acc=0; const segs = dist.map(d=>{ const from=acc/tot*360; acc+=d.n; return `${d.color} ${from}deg ${acc/tot*360}deg`; });
+  $('#st-donut').style.background = dist.length? `conic-gradient(${segs.join(',')})` : '#EEEFF7';
+  $('#st-legend').innerHTML = dist.map(d=>`<div class="row"><span><span class="lg-dot" style="background:${d.color}"></span>${esc(d.name)}</span><b>${Math.round(d.n/tot*100)}%</b></div>`).join('')
+    || '<div class="empty">Ajoute des tâches pour voir la répartition.</div>';
+}
+
+/* Filtres */
+$('#work-filters').onclick = e => { const b=e.target.closest('.seg'); if(b){ workFilter=b.dataset.f; render(); } };
+$('#mail-filters').onclick = e => { const b=e.target.closest('.seg'); if(b){ mailFolder=b.dataset.f; render(); } };
+$('#proj-filters').onclick = e => { const b=e.target.closest('.seg'); if(b){ projFilter=b.dataset.f; render(); } };
+
+/* ================= Feuilles (modales) ================= */
+function openSheet(html){ $('#sheet').innerHTML = '<div class="grab"></div>'+html; $('#veil').classList.add('open'); }
+function closeSheet(){ $('#veil').classList.remove('open'); }
+$('#veil').addEventListener('click', e => { if(e.target.id==='veil') closeSheet(); });
+
+function logDone(){ const k=isoToday(); D.stats.log[k]=(D.stats.log[k]||0)+1; }
+function toggleTask(t){ t.done=!t.done; if(t.done){ t.subtasks.forEach(s=>s.done=true); logDone(); } save(); render(); }
+
+/* --- Détail tâche --- */
+function openTask(id){
+  const t = D.tasks.find(x=>x.id===id); if(!t) return;
+  const stHTML = t.subtasks.map((s,i)=>`<button class="subtask ${s.done?'done':''}" data-st="${i}">
+    <span class="check" style="${s.done?'background:var(--green);border-color:var(--green)':''}">${s.done?checkSVG:''}</span><span class="lbl">${esc(s.t)}</span></button>`).join('');
+  openSheet(`
+    <div class="spread"><h2 style="font-size:20px">${esc(t.title)}</h2>
+      <span class="chip ${t.done?'ok':'viol'}">${t.done?'Terminée':'À faire'}</span></div>
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="k">Priorité</div><div class="v">${esc(t.priority)}</div></div>
+      <div class="meta-cell"><div class="k">Échéance</div><div class="v">${t.when==='today'?'Aujourd\'hui':t.when==='tomorrow'?'Demain':'Plus tard'}</div></div>
+      <div class="meta-cell"><div class="k">Projet</div><div class="v">${esc(t.project||'—')}</div></div>
+    </div>
+    ${t.desc?`<div style="margin-top:16px"><div class="small muted" style="font-weight:700;margin-bottom:5px">Description</div><div class="card" style="font-size:14px">${esc(t.desc)}</div></div>`:''}
+    ${t.subtasks.length?`<div style="margin-top:16px"><div class="small muted" style="font-weight:700;margin-bottom:5px">Sous-tâches</div><div class="card" style="padding:6px 16px" id="st-box">${stHTML}</div></div>`:''}
+    <div class="stack" style="margin-top:18px">
+      <button class="btn btn-primary" id="t-done-btn">${t.done?'Marquer à faire':'Marquer comme terminée'}</button>
+      <button class="btn danger" id="t-del-btn">Supprimer la tâche</button>
+    </div>`);
+  $('#t-done-btn').onclick = () => { toggleTask(t); closeSheet(); toast(t.done?'Tâche terminée ✓':'Tâche réouverte'); };
+  $('#t-del-btn').onclick = () => { D.tasks=D.tasks.filter(x=>x.id!==id); save(); render(); closeSheet(); toast('Tâche supprimée'); };
+  const box = $('#st-box');
+  if(box) box.onclick = e => {
+    const b = e.target.closest('[data-st]'); if(!b) return;
+    const s = t.subtasks[+b.dataset.st]; s.done=!s.done;
+    save(); render(); openTask(id);
+  };
+}
+
+/* --- Nouvelle tâche --- */
+function newTaskSheet(preProject){
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:14px">Nouvelle tâche</h2>
+    <div class="stack">
+      <input id="nt-title" placeholder="Titre de la tâche">
+      <div class="row">
+        <select id="nt-when"><option value="today">Aujourd'hui</option><option value="tomorrow">Demain</option><option value="later">Plus tard</option></select>
+        <select id="nt-prio"><option>Moyenne</option><option>Haute</option><option>Basse</option></select>
+      </div>
+      <select id="nt-proj"><option value="">Sans projet</option>${D.projects.map(p=>`<option ${preProject===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
+      <textarea id="nt-desc" rows="3" placeholder="Description (optionnel)"></textarea>
+      <button class="btn btn-primary" id="nt-go">Ajouter la tâche</button>
+    </div>`);
+  $('#nt-title').focus();
+  $('#nt-go').onclick = () => {
+    const title = $('#nt-title').value.trim();
+    if(!title) return toast('Donne un titre à ta tâche');
+    D.tasks.unshift({id:uid(), title, done:false, when:$('#nt-when').value, priority:$('#nt-prio').value, project:$('#nt-proj').value, desc:$('#nt-desc').value.trim(), subtasks:[]});
+    save(); render(); closeSheet(); toast('Tâche ajoutée ✓');
+  };
+}
+
+/* --- Détail mail --- */
+function openMail(id){
+  const m = D.mails.find(x=>x.id===id); if(!m) return;
+  if(!m.read){ m.read=true; save(); render(); }
+  openSheet(`
+    <span class="chip viol">${m.folder==='in'?'Boîte de réception':'Envoyé'}</span>
+    <h2 style="font-size:19px;margin:10px 0 14px">${esc(m.subject)}</h2>
+    <div class="row" style="margin-bottom:14px">
+      <span class="m-avatar" style="background:${avColor(m.from)}">${initials(m.from)}</span>
+      <span><b>${esc(m.from)}</b><br><span class="small muted">${m.folder==='in'?'à moi':'de moi'} · ${esc(m.date)}</span></span>
+    </div>
+    <div class="card" style="white-space:pre-wrap;font-size:14.5px">${esc(m.body)}</div>
+    <div class="row" style="margin-top:16px">
+      ${m.folder==='in'?'<button class="btn btn-primary" id="m-reply">Répondre</button>':''}
+      <button class="btn" style="background:#fff;box-shadow:var(--shadow);color:var(--red)" id="m-del">Supprimer</button>
+    </div>`);
+  $('#m-del').onclick = () => { D.mails=D.mails.filter(x=>x.id!==id); save(); render(); closeSheet(); toast('Mail supprimé'); };
+  const r = $('#m-reply');
+  if(r) r.onclick = () => newMailSheet({to:m.from, subject:m.subject.startsWith('Re:')?m.subject:'Re: '+m.subject});
+}
+
+/* --- Nouveau mail --- */
+function newMailSheet(pre={}){
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:14px">${pre.to?'Répondre':'Nouveau mail'}</h2>
+    <div class="stack">
+      <input id="nm-to" placeholder="Destinataire" value="${esc(pre.to||'')}">
+      <input id="nm-subj" placeholder="Objet" value="${esc(pre.subject||'')}">
+      <textarea id="nm-body" rows="5" placeholder="Ton message…"></textarea>
+      <button class="btn btn-primary" id="nm-go">Envoyer</button>
+    </div>`);
+  (pre.to?$('#nm-body'):$('#nm-to')).focus();
+  $('#nm-go').onclick = () => {
+    const to=$('#nm-to').value.trim(), subj=$('#nm-subj').value.trim(), body=$('#nm-body').value.trim();
+    if(!to||!body) return toast('Destinataire et message requis');
+    D.mails.unshift({id:uid(), from:to, subject:subj||'(sans objet)', body, read:true, date:"À l'instant", folder:'sent'});
+    save(); mailFolder='sent'; render(); closeSheet(); toast('Mail envoyé ✓');
+  };
+}
+
+/* --- Détail projet --- */
+function openProject(id){
+  const p = D.projects.find(x=>x.id===id); if(!p) return;
+  const c = counts(), pc = c.pct(p), ts = c.tasksOf(p);
+  openSheet(`
+    <div class="row"><span class="p-icon" style="background:${p.color}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></span>
+      <span style="flex:1"><h2 style="font-size:19px">${esc(p.name)}</h2><span class="chip ${pc===100?'ok':'encours'}">${pc===100?'Terminé':'En cours'}</span></span>
+      <span class="pct" style="font-size:18px">${pc}%</span></div>
+    <div class="p-bar" style="margin-top:14px"><i style="width:${pc}%;background:${p.color}"></i></div>
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="k">Date limite</div><div class="v">${esc(p.deadline||'—')}</div></div>
+      <div class="meta-cell"><div class="k">Équipe</div><div class="v">${p.team||1} membre${(p.team||1)>1?'s':''}</div></div>
+      <div class="meta-cell"><div class="k">Tâches</div><div class="v">${ts.filter(t=>t.done).length}/${ts.length}</div></div>
+    </div>
+    ${p.desc?`<div style="margin-top:16px"><div class="small muted" style="font-weight:700;margin-bottom:5px">Description</div><div class="card" style="font-size:14px">${esc(p.desc)}</div></div>`:''}
+    <div style="margin-top:16px"><div class="small muted" style="font-weight:700;margin-bottom:5px">Tâches du projet</div>
+      <div class="card" style="padding:6px 16px" id="pt-box">
+        ${ts.map(t=>`<button class="subtask ${t.done?'done':''}" data-pt="${t.id}">
+          <span class="check" style="${t.done?'background:var(--green);border-color:var(--green)':''}">${t.done?checkSVG:''}</span>
+          <span class="lbl" style="flex:1">${esc(t.title)}</span>
+          <span class="small muted">${t.when==='today'?"Aujourd'hui":t.when==='tomorrow'?'Demain':''}</span></button>`).join('')
+          || '<div class="empty">Aucune tâche dans ce projet.</div>'}
+      </div></div>
+    <div class="stack" style="margin-top:16px">
+      <button class="btn btn-primary" id="pt-add">Ajouter une tâche au projet</button>
+      <button class="btn danger" id="p-del">Supprimer le projet</button>
+    </div>`);
+  $('#pt-box').onclick = e => {
+    const b = e.target.closest('[data-pt]'); if(!b) return;
+    const t = D.tasks.find(x=>x.id===b.dataset.pt); if(!t) return;
+    toggleTask(t); openProject(id);
+  };
+  $('#pt-add').onclick = () => newTaskSheet(p.name);
+  $('#p-del').onclick = () => {
+    D.tasks.forEach(t=>{ if(t.project===p.name) t.project=''; });
+    D.projects=D.projects.filter(x=>x.id!==id); save(); render(); closeSheet(); toast('Projet supprimé');
+  };
+}
+
+/* --- Nouveau projet --- */
+function newProjectSheet(){
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:14px">Nouveau projet</h2>
+    <div class="stack">
+      <input id="np-name" placeholder="Nom du projet">
+      <input id="np-deadline" placeholder="Date limite (ex. 30 sept. 2026)">
+      <textarea id="np-desc" rows="3" placeholder="Description (optionnel)"></textarea>
+      <button class="btn btn-primary" id="np-go">Créer le projet</button>
+    </div>`);
+  $('#np-name').focus();
+  $('#np-go').onclick = () => {
+    const name = $('#np-name').value.trim();
+    if(!name) return toast('Donne un nom à ton projet');
+    if(D.projects.some(p=>p.name===name)) return toast('Un projet porte déjà ce nom');
+    D.projects.unshift({id:uid(), name, color:AV_COLORS[D.projects.length%AV_COLORS.length], deadline:$('#np-deadline').value.trim(), team:1, desc:$('#np-desc').value.trim()});
+    save(); render(); closeSheet(); toast('Projet créé ✓');
+  };
+}
+
+/* --- Nouvel événement (avec date) --- */
+function newEventSheet(preDate){
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:14px">Nouvel événement</h2>
+    <div class="stack">
+      <div class="row">
+        <span style="flex:1"><label class="small muted" style="font-weight:700;display:block;margin:0 0 5px 4px">Date</label><input id="ne-date" type="date" value="${preDate||isoToday()}"></span>
+        <span style="flex:1"><label class="small muted" style="font-weight:700;display:block;margin:0 0 5px 4px">Heure</label><input id="ne-time" type="time" value="10:00"></span>
+      </div>
+      <input id="ne-title" placeholder="Titre (ex. Réunion équipe)">
+      <input id="ne-place" placeholder="Lieu (ex. Salle A, en visio…)">
+      <button class="btn btn-primary" id="ne-go">Ajouter</button>
+    </div>`);
+  $('#ne-title').focus();
+  $('#ne-go').onclick = () => {
+    const title=$('#ne-title').value.trim(); if(!title) return toast('Donne un titre');
+    const date=$('#ne-date').value || isoToday();
+    D.events.push({id:uid(), date, time:$('#ne-time').value||'—', title, place:$('#ne-place').value.trim()||'—', color:AV_COLORS[D.events.length%AV_COLORS.length]});
+    save(); selDay=date; render(); closeSheet(); toast('Événement ajouté ✓');
+  };
+}
+
+/* --- Profil --- */
+let pendingPhoto = null;
+function profileSheet(){
+  const u = me();
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:16px;text-align:center">Mon profil</h2>
+    <div class="stack">
+      <button class="photo-pick" id="pf-photo" style="${u.photo?`background-image:url(${u.photo})`:''}">${u.photo?'':initials(session.name)}</button>
+      <button class="btn btn-ghost" id="pf-photo-btn" style="padding:4px">Changer la photo</button>
+      <input type="file" id="pf-file" accept="image/*" style="display:none">
+      <div class="field"><label>Prénom</label><input id="pf-name" value="${esc(u.name||'')}"></div>
+      <div class="field"><label>Email</label><input id="pf-email" type="email" placeholder="ton@email.com" value="${esc(u.email||'')}"></div>
+      <div class="field"><label>Poste</label><input id="pf-job" placeholder="Ex. Acheteur" value="${esc(u.job||'')}"></div>
+      <button class="btn btn-primary" id="pf-save">Enregistrer</button>
+    </div>`);
+  pendingPhoto = null;
+  $('#pf-photo-btn').onclick = $('#pf-photo').onclick = () => $('#pf-file').click();
+  $('#pf-file').onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const cv = document.createElement('canvas'); cv.width=cv.height=160;
+        const x = cv.getContext('2d');
+        const s = Math.min(img.width,img.height);
+        x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,160,160);
+        pendingPhoto = cv.toDataURL('image/jpeg',.82);
+        const pp=$('#pf-photo'); pp.style.backgroundImage=`url(${pendingPhoto})`; pp.textContent='';
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(f);
+  };
+  $('#pf-save').onclick = () => {
+    const db = usersDB(), u2 = db[session.user]; if(!u2) return;
+    const n = $('#pf-name').value.trim(); if(!n) return toast('Le prénom est requis');
+    u2.name = n; u2.email = $('#pf-email').value.trim(); u2.job = $('#pf-job').value.trim();
+    if(pendingPhoto !== null) u2.photo = pendingPhoto;
+    saveUsers(db);
+    session.name = n; store.set('focus_session', JSON.stringify(session));
+    $('#g-name').textContent = n; setAvatar();
+    closeSheet(); toast('Profil mis à jour ✓');
+  };
+}
+
+/* --- Paramètres --- */
+$('#open-settings').onclick = () => {
+  const u = me();
+  openSheet(`
+    <h2 style="font-size:20px;margin-bottom:14px">Paramètres</h2>
+    <div class="stack">
+      <div class="settings-row">
+        <span class="m-avatar" style="background:${u.photo?'none':'linear-gradient(135deg,#A99CFA,#6C5FF5)'};background-image:${u.photo?`url(${u.photo})`:'none'};background-size:cover;background-position:center">${u.photo?'':initials(u.name)}</span>
+        <span style="flex:1"><b>${esc(u.name)}</b><br><span class="small muted">${esc(u.email||'@'+session.user)}${u.job?' · '+esc(u.job):''}</span></span></div>
+      <button class="settings-row" id="set-profile"><span class="s-ic" style="background:var(--violet-soft)">👤</span>Modifier mon profil</button>
+      <button class="settings-row" data-nav="stats"><span class="s-ic" style="background:var(--blue-soft)">📊</span>Statistiques</button>
+      <button class="settings-row" data-nav="calendar"><span class="s-ic" style="background:var(--green-soft)">📅</span>Calendrier</button>
+      <button class="settings-row" id="set-reset"><span class="s-ic" style="background:var(--orange-soft)">♻️</span>Réinitialiser les données de démo</button>
+      <button class="settings-row" id="set-logout"><span class="s-ic" style="background:var(--red-soft)">🚪</span><span class="danger">Déconnexion</span></button>
+    </div>`);
+  $('#set-logout').onclick = logout;
+  $('#set-profile').onclick = profileSheet;
+  $('#set-reset').onclick = () => { D = seedData(); save(); render(); closeSheet(); toast('Données réinitialisées'); };
+};
+
+/* ================= FAB contextuel ================= */
+$('#fab').onclick = () => {
+  if(current==='mails') newMailSheet();
+  else if(current==='projects') newProjectSheet();
+  else if(current==='calendar') newEventSheet(selDay);
+  else newTaskSheet();
+};
+
+/* ================= Délégation des clics ================= */
+document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-nav]');
+  if(nav){ closeSheet(); go(nav.dataset.nav); return; }
+  const sr = e.target.closest('[data-search]');
+  if(sr){ const k=sr.dataset.search, sb=$('#sb-'+k); sb.classList.toggle('open');
+    if(sb.classList.contains('open')) $('#q-'+k).focus(); else { $('#q-'+k).value=''; Q[k]=''; render(); } return; }
+  const tg = e.target.closest('[data-toggle]');
+  if(tg){ e.stopPropagation(); const t=D.tasks.find(x=>x.id===tg.dataset.toggle); if(t) toggleTask(t); return; }
+  const tk = e.target.closest('[data-task]'); if(tk) return openTask(tk.dataset.task);
+  const ml = e.target.closest('[data-mail]'); if(ml) return openMail(ml.dataset.mail);
+  const pj = e.target.closest('[data-proj]'); if(pj) return openProject(pj.dataset.proj);
+  const de = e.target.closest('[data-del-event]');
+  if(de){ D.events=D.events.filter(x=>x.id!==de.dataset.delEvent); save(); render(); }
+});
+
+/* ================= Reprise de session ================= */
+(function(){
+  try{
+    const s = JSON.parse(store.get('focus_session')||'null');
+    if(s && usersDB()[s.user]){ session=s; enterApp(); }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
